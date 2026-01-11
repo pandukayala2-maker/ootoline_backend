@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 600px;
+        }
+        h1 {
+            color: #24b6a2;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .progress-bar-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 20px;
+            appearance: none;
+            background-color: #f3f3f3;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar::-webkit-progress-value {
+            background-color: #24b6a2;
+        }
+        .progress-bar::-moz-progress-bar {
+            background-color: #24b6a2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="{{App_Path}}/images/logo.png" alt="Company Logo" class="company-logo" />
+        </div>
+
+        <h1>Verification Successful!</h1>
+        <p>Your email has been verified successfully. You can now log into your account.</p>
+        <p>This window will close automatically.</p>
+        
+        <div class="progress-bar-container">
+            <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
+        </div>
+
+        <div class="footer"></div>
+            <p>&copy; 2024 {{App_Name}}. All rights reserved.</p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        let progressValue = 0;
+        const progressBar = document.getElementById('progressBar');
+        
+        const progressInterval = setInterval(() => {
+            progressValue += 1;
+            progressBar.value = progressValue;
+
+            if (progressValue >= 100) {
+                clearInterval(progressInterval);
+                window.close();
+            }
+        }, 100);
+    </script>
+</body>
+</html>

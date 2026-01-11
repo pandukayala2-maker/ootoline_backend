@@ -1,0 +1,8 @@
+node_modules
+build
+.env
+public
+error.log
+info.log
+# Firebase credentials
+src/firebase/serviceAccountKey.json

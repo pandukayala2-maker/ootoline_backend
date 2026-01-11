@@ -1,0 +1,48 @@
+import { Router } from 'express';
+import addressRouter from '../modules/address/address_routes';
+// import adminRouter from '../module/admin/admin_routes';
+// import adsRouter from '../module/ads/ads_routes';
+import authRouter from '../modules/auth/auth_routes';
+import bannerRoute from '../modules/banner/banner_routes';
+import bookingRouter from '../modules/booking/booking_routes';
+import brandRouter from '../modules/brand/brand_routes';
+import carRouter from '../modules/car/car_routes';
+import cartRouter from '../modules/cart/cart_routes';
+import categoryRouter from '../modules/category/category_routes';
+import dashboardRouter from '../modules/dashboard/dashboard_routes';
+import governatesRouter from '../modules/governates/governates_routes';
+import inventoryRouter from '../modules/inventory/inventory_routes';
+import orderRouter from '../modules/order/order_routes';
+import productRouter from '../modules/product/product_routes';
+import reviewRouter from '../modules/review/review_routes';
+import serviceRouter from '../modules/service/service_routes';
+import userRouter from '../modules/user/user_routes';
+import vendorRouter from '../modules/vendor/vendor_routes';
+import wishlistRouter from '../modules/wishlist/wishlist_routes';
+import vehicleRouter from '../modules/vehicle/vehicle_routes';
+
+const router = Router();
+router.use('/auth', authRouter);
+router.use('/address', addressRouter);
+router.use('/category', categoryRouter);
+router.use('/product', productRouter);
+router.use('/user', userRouter);
+router.use('/governates', governatesRouter);
+router.use('/brand', brandRouter);
+router.use('/order', orderRouter);
+router.use('/cart', cartRouter);
+router.use('/banner', bannerRoute);
+router.use('/review', reviewRouter);
+router.use('/dashboard', dashboardRouter);
+router.use('/vendor', vendorRouter);
+router.use('/service', serviceRouter);
+router.use('/car', carRouter);
+router.use('/inventory', inventoryRouter);
+router.use('/booking', bookingRouter);
+router.use('/wishlist', wishlistRouter);
+router.use('/vehicle', vehicleRouter);
+
+// router.use('/admin', adminRouter);
+// router.use('/vendor', vendorRouter);
+
+export default router;
