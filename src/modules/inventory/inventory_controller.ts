@@ -28,10 +28,46 @@ class InventoryController {
     };
 
     static update = async (req: Request, res: Response, next: NextFunction) => {
-        const docDoc: InventoryDocument = req.body;
-        const id: string = req.params.id ?? req.body._id;
-        const data = await InventoryServices.update(docDoc, id);
-        return data ? baseResponse({ res: res, data: data }) : next(new ServerIssueError('Error while updating'));
+        try {
+            const docDoc: InventoryDocument = req.body;
+            const id: string = req.params.id ?? req.body._id;
+            
+            // Get existing inventory to handle additive quantity updates
+            const existingInventory = await InventoryServices.findById(id);
+            if (!existingInventory) {
+                return next(new ServerIssueError('Inventory not found'));
+            }
+
+            // Process inventory items - handle additive quantity updates
+            if (docDoc.inventory_items && Array.isArray(docDoc.inventory_items)) {
+                docDoc.inventory_items = docDoc.inventory_items.map((newItem: any) => {
+                    // Find existing item with same product_id
+                    const existingItem = existingInventory.inventory_items.find(
+                        (item: any) => item.product_id.toString() === newItem.product_id.toString()
+                    );
+
+                    if (existingItem) {
+                        // For existing items, add to previous quantity (additive update)
+                        return {
+                            ...newItem,
+                            quantity: (existingItem.quantity || 0) + (newItem.quantity || 0),
+                            sold_quantity: newItem.sold_quantity ?? existingItem.sold_quantity ?? 0,
+                        };
+                    } else {
+                        // For new items, use provided quantity as-is
+                        return {
+                            ...newItem,
+                            sold_quantity: newItem.sold_quantity ?? 0,
+                        };
+                    }
+                });
+            }
+
+            const data = await InventoryServices.update(docDoc, id);
+            return data ? baseResponse({ res: res, data: data }) : next(new ServerIssueError('Error while updating'));
+        } catch (error) {
+            next(new ServerIssueError());
+        }
     };
 
     static find = async (req: Request, res: Response, next: NextFunction) => {

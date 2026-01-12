@@ -93,11 +93,31 @@ class VendorController {
                 );
             }
         }
-        if(timeslots.length > 0){
-            
+        
+        // Handle timeslots if provided
+        if (timeslots && Array.isArray(timeslots)) {
+            userDoc.timeslots = timeslots.map((slot: any) => ({
+                startTime: new Date(slot.startTime),
+                endTime: new Date(slot.endTime),
+                isActive: Boolean(slot.isActive),
+                number_of_services: Number(slot.number_of_services) || 1,
+            }));
+            console.log('📅 Updating vendor with timeslots:', userDoc.timeslots);
         }
-        if(weekends.length > 0){
-
+        
+        // Handle weekends if provided
+        if (weekends && Array.isArray(weekends)) {
+            // Accept either string day names or convert numbers to day names
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            userDoc.weekends = weekends.map((day: any) => {
+                if (typeof day === 'string') {
+                    return day; // Already a day name
+                } else if (typeof day === 'number') {
+                    return dayNames[day] || ''; // Convert number to day name
+                }
+                return '';
+            }).filter((d: string) => d !== '');
+            console.log('📆 Updating vendor with weekends:', userDoc.weekends);
         }
 
         // Handle service assignments if provided
