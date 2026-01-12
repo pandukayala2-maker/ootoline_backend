@@ -65,7 +65,7 @@ const VendorSchema = new Schema<VendorDocument>({
              type: String,
              default:true
         },
-        number_of_services:{
+        number_of_serve:{
             type: Number,
             default:1
         }

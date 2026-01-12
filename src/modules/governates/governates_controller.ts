@@ -33,7 +33,6 @@ class GovernateController {
         if (vendorId && (!originalGovernate.vendor_id || originalGovernate.vendor_id === null)) {
             // Check if vendor already has their own copy of this admin governate by admin_governate_id
             const vendorCopy = await GovernateServices.find({
-                admin_governate_id: id,
                 vendor_id: vendorId
             });
             
@@ -54,8 +53,7 @@ class GovernateController {
                     name: req.body.name || originalGovernate.name,
                     value: req.body.value || originalGovernate.value,
                     vendor_id: vendorId,
-                    is_disabled: req.body.is_disabled ?? (originalGovernate.is_disabled || false),
-                    admin_governate_id: id // Track which admin governate this was copied from
+                    is_disabled: req.body.is_disabled ?? (originalGovernate.is_disabled || false)
                 };
                 const data = await GovernateServices.create(newGovernate as GovernateDocument);
                 return data ? baseResponse({ res: res, data: data }) : next(new ServerIssueError('Error while creating vendor copy'));

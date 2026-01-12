@@ -130,6 +130,43 @@ class ServiceServices {
         // Return all unique categories
         return Array.from(categoryMap.values());
     };
+
+static getVendorSlots = async (vendorId: string, date: string) => {
+    const { VendorModel } = await import('../vendor/vendor_model');
+    const { OrderModel } = await import('../order/order_model');
+
+    const vendor = await VendorModel.findById(vendorId).select('timeslots');
+    if (!vendor || !vendor.timeslots) return [];
+
+    const searchDate = new Date(date);
+    const startOfDay = new Date(searchDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(searchDate.setHours(23, 59, 59, 999));
+    const orders = await OrderModel.find({
+        vendor_id: vendorId,
+        'slotTiming.date': { $gte: startOfDay, $lte: endOfDay },
+        status: { $ne: 'cancelled' } 
+    });
+
+    const slotsWithAvailability = vendor.timeslots.map((slot: any) => {
+        const bookedCount = orders.filter(order => {
+            const orderStart = new Date(order.slotTiming.startTime).getTime();
+            const slotStart = new Date(slot.startTime).getTime();
+            return orderStart === slotStart;
+        }).length;
+
+        const maxCapacity = slot.number_of_serve || 1;
+
+        return {
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            maxCapacity: maxCapacity,
+            currentBookings: bookedCount,
+            available: slot.isActive !== "false" && bookedCount < maxCapacity
+        };
+    });
+
+    return slotsWithAvailability;
+};
 }
 
 export default ServiceServices;

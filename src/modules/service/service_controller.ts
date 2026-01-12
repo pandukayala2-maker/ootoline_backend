@@ -48,6 +48,24 @@ class ServiceController {
         const categories = await ServiceServices.getVendorAssignedCategories(vendorId);
         return baseResponse({ res: res, data: categories });
     };
+    static getAvailableSlots = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { vendor_id } = req.params;
+        const { date } = req.query; 
+
+        if (!vendor_id || !date) {
+            return res.status(400).json({ message: "vendor_id and date are required" });
+        }
+        const slots = await ServiceServices.getVendorSlots(vendor_id, date as string);
+        return baseResponse({ 
+            res: res, 
+            data: slots, 
+            message: "Slots fetched successfully" 
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 }
 
 export default ServiceController;

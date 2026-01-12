@@ -25,7 +25,7 @@ interface OrderDocument extends BaseDocument {
     total_price: number;
     points_used: number;
     points_earned: number;
-    slotTiming:object
+    slotTiming:any
     address: {
         id: Types.ObjectId;
         name: string;
