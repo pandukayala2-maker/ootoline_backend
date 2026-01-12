@@ -40,7 +40,7 @@ class ServiceController {
     static delete = async (req: Request, res: Response, next: NextFunction) => {
         const id: string = req.params.id ?? req.body._id;
         const data = await ServiceServices.update({ deleted_at: new Date() }, id);
-        return data ? baseResponse({ res: res, message: 'Successfully Deleted' }) : next(new ServerIssueError('Error while deleting'));
+        return data ? baseResponse({ res: res, message: 'Successfully Delete' }) : next(new ServerIssueError('Error while deleting'));
     };
 
     static getVendorCategories = async (req: Request, res: Response, next: NextFunction) => {
