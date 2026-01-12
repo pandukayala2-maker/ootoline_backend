@@ -4,6 +4,7 @@ import { BaseDocument, baseSchema } from '../../common/base_model';
 interface InventoryItems extends BaseDocument {
     product_id: Types.ObjectId;
     quantity: number;
+    sold_quantity?: number;
 }
 
 interface InventoryDocument extends BaseDocument {
@@ -17,6 +18,11 @@ const inventorItemSchema = new Schema<InventoryItems>({
         type: Number,
         required: true,
         min: [1, 'Quantity must be at least 1']
+    },
+    sold_quantity: {
+        type: Number,
+        default: 0,
+        min: [0, 'Sold quantity cannot be negative']
     },
     product_id: {
         type: Schema.Types.ObjectId,

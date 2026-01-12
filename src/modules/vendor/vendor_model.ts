@@ -25,8 +25,13 @@ interface VendorDocument extends BaseDocument {
         type: string;
         extra_details?: string;
     };
-    timeslots?: any;
-    weekends?:any;
+    timeslots?: Array<{
+        startTime: Date;
+        endTime: Date;
+        isActive: boolean;
+        number_of_services: number;
+    }>;
+    weekends?: string[]; // Day names: Sunday, Monday, etc.
 }
 
 const VendorSchema = new Schema<VendorDocument>({
@@ -51,28 +56,27 @@ const VendorSchema = new Schema<VendorDocument>({
         type: { type: String },
         extra_details: { type: String }
     },
-    timeslots:[
+    timeslots: [
         {
-            startTime:{
-            type: Date,
-            required: true,
+            startTime: {
+                type: Date,
+                required: true,
+            },
+            endTime: {
+                type: Date,
+                required: true,
+            },
+            isActive: {
+                type: Boolean,
+                default: true,
+            },
+            number_of_services: {
+                type: Number,
+                default: 1,
+            },
         },
-            endTime:{
-            type: Date,
-            required: true,
-        },
-        isActive:{
-             type: String,
-             default:true
-        },
-        number_of_serve:{
-            type: Number,
-            default:1
-        }
-    }
-
     ],
-    weekends:[{type:String}]
+    weekends: [{ type: String }] // Day names: Sunday, Monday, etc.
 });
 
 VendorSchema.add(baseSchema);
