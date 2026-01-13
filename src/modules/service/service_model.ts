@@ -24,8 +24,8 @@ interface ServiceDocument extends BaseDocument {
     image_list?: string[];
     category_id?: Types.ObjectId[];
     vendor_id: Types.ObjectId;
-    home_service:Boolean;
-    onsite_service:Boolean;
+    home_service: boolean;
+    onsite_service: boolean;
 }
 
 const serviceSchema = new Schema<ServiceDocument>({
@@ -40,8 +40,8 @@ const serviceSchema = new Schema<ServiceDocument>({
     image_list: { type: [String] },
     category_id: { type: [Types.ObjectId], ref: 'categories' },
     vendor_id: { type: Schema.Types.ObjectId, ref: 'vendors', required: true },
-    home_service:{type:String, default:false},
-    onsite_service:{type:String, default:true},
+    home_service: { type: Boolean, default: true },
+    onsite_service: { type: Boolean, default: false },
 });
 
 serviceSchema.set('toJSON', {

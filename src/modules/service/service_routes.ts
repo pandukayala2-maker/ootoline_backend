@@ -10,6 +10,7 @@ const router = Router();
 
 router.get('/', asyncHandler(ServiceController.find));
 router.get('/vendor/:vendor_id/categories', asyncHandler(ServiceController.getVendorCategories));
+router.get('/vendor/:vendor_id/slots', asyncHandler(ServiceController.getAvailableSlots));
 router.get('/:id', asyncHandler(ServiceController.findById));
 router.post(
     '/',

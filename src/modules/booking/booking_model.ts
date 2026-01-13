@@ -5,6 +5,13 @@ import { AddOnDocument, addOnSchema } from '../service/service_model';
 interface BookingDocument extends BaseDocument {
     booking_no: string;
     booking_date: Date;
+    time_slot?: {
+        startTime: Date;
+        endTime: Date;
+    };
+    service_type?: string;
+    address_id?: Types.ObjectId;
+    governate_charge?: number;
     user_id: Types.ObjectId;
     vendor_id: Types.ObjectId;
     service_id: Types.ObjectId;
@@ -32,6 +39,13 @@ interface BookingDocument extends BaseDocument {
 const bookingSchema = new Schema<BookingDocument>({
     booking_no: { type: String },
     booking_date: { type: Date },
+    time_slot: {
+        startTime: { type: Date },
+        endTime: { type: Date }
+    },
+    service_type: { type: String, enum: ['home_service', 'onsite'], default: 'home_service' },
+    address_id: { type: Schema.Types.ObjectId, ref: 'addresses' },
+    governate_charge: { type: Number, default: 0 },
     user_id: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     vendor_id: { type: Schema.Types.ObjectId, ref: 'vendors', required: true },
     service_id: { type: Schema.Types.ObjectId, ref: 'services' },

@@ -11,8 +11,9 @@ class DashboardController {
         }
         const sales = await DashboardServices.totalOrderSales(vendor_id);
         const monthlySales = await DashboardServices.salesByYear(vendor_id);
+        const counts = await DashboardServices.getCounts(vendor_id);
 
-        return baseResponse({ res, data: { ...sales, monthlySales } });
+        return baseResponse({ res, data: { ...sales, ...counts, monthlySales } });
     };
 }
 

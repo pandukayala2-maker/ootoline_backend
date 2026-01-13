@@ -1,6 +1,9 @@
 import { Types } from 'mongoose';
 import { BookingModel } from '../booking/booking_model';
 import { OrderModel } from '../order/order_model';
+import { UserModel } from '../user/user_model';
+import { VendorModel } from '../vendor/vendor_model';
+import { CategoryModel } from '../category/category_model';
 
 class DashboardServices {
     static totalOrderSales = async (vendor_id?: string) => {
@@ -126,6 +129,41 @@ class DashboardServices {
         const date = new Date();
         date.setMonth(month - 1);
         return date.toLocaleString('default', { month: 'short' }); // Jan, Feb, etc.
+    };
+
+    static getCounts = async (vendor_id?: string) => {
+        try {
+            // For admin (no vendor_id), get total counts
+            // For vendors, they only see their own data
+            const totalVendors = vendor_id ? 0 : await VendorModel.countDocuments({ deleted_at: null });
+            const totalUsers = vendor_id ? 0 : await UserModel.countDocuments({ deleted_at: null });
+            const totalCategories = await CategoryModel.countDocuments({ deleted_at: null });
+            const totalProducts = await (require('../product/product_model').ProductModel as any).countDocuments({ deleted_at: null });
+            const totalServices = await (require('../service/service_model').ServiceModel as any).countDocuments({ deleted_at: null });
+            const totalPending = vendor_id 
+                ? 0 
+                : (await (require('../order/order_model').OrderModel as any).countDocuments({ status: 'pending' })) +
+                  (await (require('../booking/booking_model').BookingModel as any).countDocuments({ status: 'pending' }));
+
+            return {
+                total_vendors: totalVendors,
+                total_users: totalUsers,
+                total_categories: totalCategories,
+                total_products: totalProducts,
+                total_services: totalServices,
+                total_pending: totalPending
+            };
+        } catch (error) {
+            console.error('Error getting counts:', error);
+            return {
+                total_vendors: 0,
+                total_users: 0,
+                total_categories: 0,
+                total_products: 0,
+                total_services: 0,
+                total_pending: 0
+            };
+        }
     };
 }
 
