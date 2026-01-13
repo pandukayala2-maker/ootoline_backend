@@ -367,7 +367,8 @@ class AuthController {
             let combinedData = { ...auth.toJSON(), access_token: accessToken, refresh_token: refreshToken, profile: false };
             const vendor = await VendorService.findById(auth.id);
             if (vendor) combinedData.profile = !!vendor.company_name;
-            combinedData = { ...combinedData, ...vendor?.toJSON() };
+            // vendor is a plain object from aggregation pipeline, not a Mongoose document - don't call toJSON()
+            combinedData = { ...combinedData, ...vendor };
             return baseResponse({ res: res, data: combinedData });
         }
 

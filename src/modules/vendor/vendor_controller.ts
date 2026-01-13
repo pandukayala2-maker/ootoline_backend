@@ -28,25 +28,45 @@ class VendorController {
 
     static findById = async (req: Request, res: Response, next: NextFunction) => {
         const id: string = req.params.id ?? req.body._id;
-        const data: VendorDocument | null = await VendorService.findById(id);
+        const data: any = await VendorService.findById(id);
         const authData: AuthDocument | null = await AuthModel.findById(id);
         if (!data || !authData) throw new NotFoundError('Vendor not found');
-        const combimeData = { ...data?.toJSON(), ...authData?.toJSON() };
+        
+        console.log('🔍 Backend findById: Raw data from aggregation:', {
+            id: data.id || data._id,
+            category_ids: data.category_ids,
+            category_ids_type: typeof data.category_ids,
+            category_ids_length: (data.category_ids || []).length
+        });
+        
+        // Data from aggregation pipeline is already a plain object, NOT a mongoose document
+        // So we don't call toJSON() on it - it's already transformed
+        const dataJson = data as any;  // Already in the right format from aggregation
+        const authJson = authData?.toJSON() as any;
+        
+        console.log('🔍 Backend findById: Data keys:', Object.keys(dataJson));
+        console.log('🔍 Backend findById: Has category_ids key:', 'category_ids' in dataJson);
+        
+        const combimeData = { ...dataJson, ...authJson };
+        
         if (data) {
             combimeData.profile = data.company_name ? true : false;
-            // Ensure category_ids are included in the response as string array
+            
+            // CRITICAL: Ensure category_ids is always included
             const categoryIds = (data.category_ids || []) as any[];
+            console.log('🔍 Backend findById: category_ids from aggregation result:', categoryIds);
+            console.log('🔍 Backend findById: category_ids length:', categoryIds.length);
+            
             if (categoryIds && categoryIds.length > 0) {
-                combimeData.category_ids = categoryIds.map((id) => {
-                    // Handle both ObjectId and string formats
+                const convertedIds = categoryIds.map((id: any) => {
                     const idStr = typeof id === 'string' ? id : id.toString();
-                    console.log('🔍 Converting category ID:', id, '->', idStr);
                     return idStr;
                 });
-                console.log('✅ Vendor category_ids being returned:', combimeData.category_ids);
+                combimeData.category_ids = convertedIds;
+                console.log('✅ Backend findById: Set category_ids to:', convertedIds);
             } else {
                 combimeData.category_ids = [];
-                console.log('🔍 Vendor has no category_ids assigned');
+                console.log('🔍 Backend findById: Vendor has NO category_ids (empty or null)');
             }
         }
         return baseResponse({ res: res, data: combimeData });

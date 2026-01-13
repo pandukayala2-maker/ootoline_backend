@@ -49,7 +49,46 @@ class VendorService {
 
     static findOne = async (filter: any) => await VendorModel.findOne(filter);
 
-    static findById = async (id: string): Promise<VendorDocument | null> => await VendorModel.findById(id);
+    static findById = async (id: string): Promise<VendorDocument | null> => {
+        // Use aggregation pipeline like find() to ensure category_ids is properly included
+        const pipeline: any[] = [];
+        
+        pipeline.push({
+            $match: {
+                _id: new Types.ObjectId(id),
+                deleted_at: null
+            }
+        });
+
+        pipeline.push(authLookUp());
+
+        pipeline.push({
+            $project: {
+                id: '$_id',
+                _id: 0,
+                email: 1,
+                company_name: 1,
+                image: 1,
+                country: 1,
+                phone: 1,
+                is_disabled: { $arrayElemAt: ['$auth.is_disabled', 0] },
+                from_time: 1,
+                to_time: 1,
+                iban_number: 1,
+                commission: 1,
+                category_ids: 1,
+                created_at: 1,
+                owner_name: 1,
+                timeslots: 1,
+                governates: 1,
+                address: 1,
+                weekends: 1
+            }
+        });
+
+        const result = await VendorModel.aggregate(pipeline);
+        return result && result.length > 0 ? (result[0] as any) : null;
+    };
 
     static update = async (data: VendorDocument, id: string) => await VendorModel.findByIdAndUpdate(id, data, { new: true, context: 'authUpdate' });
 
